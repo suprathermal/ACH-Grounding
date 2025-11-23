@@ -1,0 +1,14 @@
+# Put gpt-5-nano for the fastest and least expensive test
+model = gpt-5
+CurrentPromptStyle = "question-first-semiformal"
+Question=What profession or way of earning income will be highly valued by 2035?
+nH = 2
+# Feel free to extend this list with your ideas
+ExtraH = {"Fast coder":False, "People manager":, "AI manager":, "Researcher":, "Inventor of new ideas":}
+nE = 1
+# Feel free to extend this list with your observations
+ExtraE = ["LLMs have fundamental difficulty with learning combinatorically complex patterns (e.g. https://arxiv.org/abs/2401.11817)", "LLMs bear no personal responsibility. Humans do.", "If LLMs are smart, so one needs to be to understand them"]
+Moniker = "Professions"
+nMaxHLen = 128
+nMaxELen = 280
+extra_return_format = "Return ONLY profession name or very brief description of its nature, nothing else."
