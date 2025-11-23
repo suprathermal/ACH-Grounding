@@ -8,7 +8,7 @@ LLMs hallucinate. Various strategies exist to cope with that. This project imple
 
 The approach relies upon two pillars:
 
-1. LLM statements are organized as a matrix of evidence vs. hypotheses, where cell indicates the degree of hypothesis support by each piece of evidence.
+1. LLM statements are organized as a matrix of evidence vs. hypotheses, where each cell indicates the degree of hypothesis support by each piece of evidence.
 
 | | Hypothesis1 | Hypothesis2 | ... | HypothesisN |
 |---|---|---|---|---|
@@ -22,18 +22,16 @@ This inherits from the Analysis of Competitive Hypotheses (ACH, https://en.wikip
 The benefits of this arrangement are:
 - Stability against some fraction of rogue/wrong observations
 - Stability against confirmation bias
-- Guarantee of cross-referencing *each* piece of knowlegde agains *each* hypothesis, effectively "interrogating" all situational knowledge out of the LLM.
-- Easy adoptiong of external evidence or hypotheses as further grounding constrains.
+- Guarantee of cross-referencing *each* piece of knowledge against *each* hypothesis, effectively "interrogating" all situational knowledge out of the LLM.
+- Easy adoption of external evidence or hypotheses as further grounding constraints.
 
-2. LLMs only fill out the matrics, but the analysis of it is done via "classic" algorithms.
+2. LLMs only fill out the matrix, but the analysis of it is done via "classic" algorithms.
 
-It is formally proven (e.g. https://arxiv.org/abs/2401.11817, http://arxiv.org/pdf/2508.01781) that LLMs hallucinations on broad classes of practically important but combinatorialy complex problems are inevitable and could not be arbitrarily reduced.
-
-Depending on the degree of assurance needed, analysis of the ACH matrix above may require high combinatorial complexity. Thus, for reliable and repeatable answers that last leg of analysis is done by the "classic" code.
+It is proven (e.g. https://arxiv.org/abs/2401.11817, https://arxiv.org/pdf/2508.01781) that LLMs hallucinations on many practically important but combinatorially complex problems are inevitable and could not be arbitrarily reduced. Depending on the degree of assurance needed, analysis of the ACH matrix above may require high combinatorial complexity. Thus, for reliable and repeatable answers that last leg of analysis is done by the "classic" code.
 
 ## Output
 
-The prinary output of the evaluation system is likelihood scores of being true for each hypothesis. It is printed to the screen and save as a .csv file to time-stamped folder in the Out\ folder.
+The primary output of the evaluation system is likelihood scores of being true for each hypothesis. It is printed to the screen and saved as a .csv file to time-stamped folder in the Out\ folder.
 
 Additionally, multiple intermediate outputs, including the statistical analysis of tokens costs, are saved to that folder.
 
@@ -44,10 +42,10 @@ The system works as follows (all inputs and options are controlled via a single 
 - Estimates dollar cost of API call before execution, ask to approve if the estimate is greater than $1
 - (Optionally) generate new hypotheses about a given question/event
 - Collect and generate supporting and contradicting evidence
-- Cross-validate each hypothesys against each evidence to build a support matrix
+- Cross-validate each hypothesis against each evidence to build a support matrix
 - Perform statistical analysis of the results
 
-Internall, the project utilizes basic **Retrieval-Augmented Generation (RAG)** to enhance AI responses by providing context from previously generated hypotheses and evidence. This approach allows the system to build upon its own outputs iteratively, creating more coherent and contextually aware results.
+Internally, the project utilizes basic **Retrieval-Augmented Generation (RAG)** to enhance AI responses by providing context from previously generated hypotheses and evidence. This approach allows the system to build upon its own outputs iteratively, creating more coherent and contextually aware results.
 
 ## Approach
 
@@ -129,7 +127,7 @@ extra_return_format = "Return ONLY profession name or very brief description of 
 - `nMaxHLen`: Maximum length for hypotheses (in characters)
 - `nMaxELen`: Maximum length for evidence (in characters)
 - `extra_return_format`: Custom format instruction for AI-generated hypotheses
-- `b_fill_matrix`, optional: Whether to fill the cross-reference matrix (default: True)
+- `b_fill_matrix` (optional): Whether to fill the cross-reference matrix (default: True)
 
 ## Usage
 
