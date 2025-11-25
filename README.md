@@ -8,7 +8,7 @@ LLMs hallucinate. Various strategies exist to cope with that. This project imple
 
 The approach relies upon two pillars:
 
-*First*, LLM statements are organized as a matrix of evidence vs. hypotheses, where each cell indicates the degree of hypothesis support by each piece of evidence.
+**First**, LLM statements are organized as a matrix of evidence vs. hypotheses, where each cell indicates the degree of hypothesis support by each piece of evidence.
 
 | | Hypothesis1 | Hypothesis2 | ... | HypothesisN |
 |---|---|---|---|---|
@@ -26,7 +26,7 @@ The benefits of this arrangement include:
 - Easy adoption of external evidence or hypotheses as further grounding constraints.
 
 
-*Second*, LLMs only fill out the matrix, but the analysis of it is done via "classic" algorithms.
+**Second**, LLMs only fill out the matrix, but the analysis of it is done via "classic" algorithms.
 
 It is known (e.g. https://arxiv.org/abs/2401.11817, https://arxiv.org/pdf/2508.01781) that LLMs hallucinations on certain combinatorially complex yet practically important problems are inevitable and could not be arbitrarily reduced. Analysis of the ACH matrix above may require high combinatorial complexity. Thus, for reliable and repeatable answers that last leg of the analysis is done by the "classic" code.
 
