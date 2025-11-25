@@ -8,7 +8,7 @@ LLMs hallucinate. Various strategies exist to cope with that. This project imple
 
 The approach relies upon two pillars:
 
-1. LLM statements are organized as a matrix of evidence vs. hypotheses, where each cell indicates the degree of hypothesis support by each piece of evidence.
+*First*, LLM statements are organized as a matrix of evidence vs. hypotheses, where each cell indicates the degree of hypothesis support by each piece of evidence.
 
 | | Hypothesis1 | Hypothesis2 | ... | HypothesisN |
 |---|---|---|---|---|
@@ -19,29 +19,30 @@ The approach relies upon two pillars:
 
 This inherits from the Analysis of Competitive Hypotheses (ACH, https://en.wikipedia.org/wiki/Analysis_of_competing_hypotheses) approach. 
 
-The benefits of this arrangement are:
+The benefits of this arrangement include:
 - Stability against some fraction of rogue/wrong observations
 - Stability against confirmation bias
-- Guarantee of cross-referencing *each* piece of knowledge against *each* hypothesis, effectively "interrogating" all situational knowledge out of the LLM.
+- Cross-referencing of *each* piece of knowledge against *each* hypothesis, effectively "interrogating" all situational knowledge out of the LLM.
 - Easy adoption of external evidence or hypotheses as further grounding constraints.
 
-2. LLMs only fill out the matrix, but the analysis of it is done via "classic" algorithms.
 
-It is proven (e.g. https://arxiv.org/abs/2401.11817, https://arxiv.org/pdf/2508.01781) that LLMs hallucinations on many practically important but combinatorially complex problems are inevitable and could not be arbitrarily reduced. Depending on the degree of assurance needed, analysis of the ACH matrix above may require high combinatorial complexity. Thus, for reliable and repeatable answers that last leg of analysis is done by the "classic" code.
+*Second*, LLMs only fill out the matrix, but the analysis of it is done via "classic" algorithms.
+
+It is known (e.g. https://arxiv.org/abs/2401.11817, https://arxiv.org/pdf/2508.01781) that LLMs hallucinations on certain combinatorially complex yet practically important problems are inevitable and could not be arbitrarily reduced. Analysis of the ACH matrix above may require high combinatorial complexity. Thus, for reliable and repeatable answers that last leg of the analysis is done by the "classic" code.
 
 ## Output
 
-The primary output of the evaluation system is likelihood scores of being true for each hypothesis. It is printed to the screen and saved as a .csv file to time-stamped folder in the Out\ folder.
+The primary output of the evaluation system is likelihood scores of being true for each hypothesis. It is printed to the screen and saved as a .csv file to time-stamped folder in the in "Out/YYYY-MM-DD_HH-MM-SS/" folder.
 
-Additionally, multiple intermediate outputs, including the statistical analysis of tokens costs, are saved to that folder.
+Additionally, some intermediate outputs, including the statistical analysis of tokens costs, are saved to that folder, too.
 
 ## Process
 
-The system works as follows (all inputs and options are controlled via a single config file):
-- Take pre-existing set of hypotheses and evidence from a user
-- Estimates dollar cost of API call before execution, ask to approve if the estimate is greater than $1
+The system operates through the following steps (all inputs and options are controlled via a single config file):
+- Take pre-existing set of hypotheses and evidence from a user.
+- Estimate approximate dollar cost of API call before execution, and ask for approval if the estimate exceeds $1.00
 - (Optionally) generate new hypotheses about a given question/event
-- Collect and generate supporting and contradicting evidence
+- (Optionally) collect and generate supporting and contradicting evidence
 - Cross-validate each hypothesis against each evidence to build a support matrix
 - Perform statistical analysis of the results
 
@@ -144,12 +145,6 @@ The script will:
 4. Build the support matrix
 5. Save results to timestamped output folder in `Out/`
 
-## Output
-
-Results are saved in `Out/YYYY-MM-DD_HH-MM-SS/`:
-- `{Moniker}-{model}.csv`: The support matrix (hypotheses × evidence)
-- `{Moniker}-{model}-eval.csv`: Statistical evaluation results
-
 ## Project Structure
 
 ```
@@ -178,3 +173,7 @@ Results are saved in `Out/YYYY-MM-DD_HH-MM-SS/`:
 
 MIT License
 Copyright (c) 2025 by Eugene V. Bobukh
+
+## Contribution
+
+Feel free to fork and use. But please mention Eugene V. Bobukh as the original code author if you are forking or using this code.
