@@ -47,7 +47,7 @@ This is:
 This is NOT:
 - A solution to world problems.
 - An Enterprise grade tool adhering to multitude of compliance standards.
-- A tool for massive data processing. The algorithm cost is O(|Evidence|*|Hypotheses|), which will cost a fortune on inputs of millions data points.
+- A tool for massive data processing. The algorithm consumes O((|Evidence| + |Hypotheses|)^2) tokens, which will cost a fortune on inputs of millions data points.
 - Anything that balances multiple requirements. The only one it aims for is correctness, at the cost of everything else.
 - An example of very clean prompting. Some improvements around the wording are clearly possible.
 - A RAG code ready for adoption. Yes, the tool does repeated LLM calls augmented with previously accumulated knowledge, which *technically* qualifies as RAG -- but only as the most rudimentary form of it.
