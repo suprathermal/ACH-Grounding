@@ -1,3 +1,7 @@
+# prompt structure and forgotten system part
+# More interpretable charts output
+# Mention telemetry/logging is basic
+# That we use only OpenAI
 from openai import OpenAI
 
 import os
@@ -38,11 +42,15 @@ def get_config() -> Dict[str, Any]:
     return parse_config(s_config)
 
 def get_client() -> OpenAI:
-    api_key = os.getenv("OPENAI_API_KEY")
-    if not api_key:
-        raise ValueError("OPENAI_API_KEY environment variable is not set")
+    try:
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not api_key:
+            raise ValueError("OPENAI_API_KEY environment variable is not set")
 
-    return OpenAI(api_key=api_key)
+        return OpenAI(api_key=api_key)
+    except Exception as e:
+        print(f"Error getting client or API key: {e}")
+        return None
 
 def ask_h(client: OpenAI, s_event: str, l_h: List[str], d_config: Dict[str, Any], max_h_len: int, prompt_style: str, model_in: str = "gpt-5-mini") -> str:
     class Hypothesis(BaseModel):
@@ -51,8 +59,7 @@ def ask_h(client: OpenAI, s_event: str, l_h: List[str], d_config: Dict[str, Any]
     s_h = "\n".join(l_h)
     templates = PROMPT_TEMPLATES[prompt_style]
 
-    s_request = templates["intro"] + "\n"
-    s_request += templates["hypothesis_request"].format(event=s_event)
+    s_request = templates["hypothesis_request"].format(event=s_event)
     s_request += "\n" + templates["consideration"] + "\n"
     if (len(s_h) > 0):
         s_request += "\n\n" + templates["differentiation"] + "\n" + s_h
@@ -60,13 +67,15 @@ def ask_h(client: OpenAI, s_event: str, l_h: List[str], d_config: Dict[str, Any]
     # Get extra_return_format from config dictionary
     extra_return_format = d_config.get("extra_return_format")
 
+    s_user_content = s_request + "\n"
+    s_user_content += f"\n\n{templates['return_format'].format(extra_return_format=extra_return_format)} no longer than {max_h_len} characters."
+
     response = client.responses.parse(
         model=model_in,
         input=[
-            {"role": "system", 
-            "content": s_request + "\n"
-            + s_h
-            + f"\n\n{templates['return_format'].format(extra_return_format=extra_return_format)} no longer than {max_h_len} characters."}
+            {"role": "system", "content": templates["intro"]},
+            {"role": "user", 
+            "content": s_user_content}            
         ],
         text_format=Hypothesis
     )
@@ -86,7 +95,7 @@ def ask_e(client: OpenAI, s_h: str, s_rel: str, l_e: List[str], d_config: Dict[s
     s_e = "\n".join(l_e)
     templates = PROMPT_TEMPLATES[prompt_style]
 
-    s_request = templates["intro"] + "\n"
+    s_request = ""
     # Check if template expects {event} parameter
     if "{event}" in templates["evidence_request"]:
         s_request += templates["evidence_request"].format(relation=s_rel, hypothesis=s_h, event=d_config["Question"])
@@ -96,13 +105,15 @@ def ask_e(client: OpenAI, s_h: str, s_rel: str, l_e: List[str], d_config: Dict[s
     if (len(s_e) > 0):
         s_request += "\n\n" + templates["evidence_differentiation"] + "\n" + s_e
 
+    s_user_content = s_request + "\n"
+    s_user_content += f"\n\n{templates['evidence_format']} no longer than {max_e_len} characters."
+
     response = client.responses.parse(
         model=model_in,
         input=[
-            {"role": "system", 
-            "content": s_request + "\n"
-            + s_h
-            + f"\n\n{templates['evidence_format']} no longer than {max_e_len} characters."}
+            {"role": "system", "content": templates["intro"]},
+            {"role": "user", 
+            "content": s_user_content}            
         ],
         text_format=Evidence
     )
@@ -125,7 +136,7 @@ def cross_ref(client: OpenAI, s_h: str, s_e: str, d_config: Dict[str, Any], prom
 
     templates = PROMPT_TEMPLATES[prompt_style]
     
-    s_request = templates["intro"] + "\n"
+    s_request = ""
     # Check if template expects {event} parameter
     if "{event}" in templates["support_request"]:
         s_request += templates["support_request"].format(evidence=s_e, hypothesis=s_h, event=d_config["Question"]) + " "
@@ -133,13 +144,15 @@ def cross_ref(client: OpenAI, s_h: str, s_e: str, d_config: Dict[str, Any], prom
         s_request += templates["support_request"].format(evidence=s_e, hypothesis=s_h) + " "
     s_request += templates["support_scale"]
 
+    s_user_content = s_request + "\n"
+    s_user_content += "\n\n" + templates["support_format"]
+
     response = client.responses.parse(
         model=model_in,
         input=[
-            {"role": "system", 
-            "content": s_request + "\n"
-            + s_h
-            + "\n\n" + templates["support_format"]}
+            {"role": "system", "content": templates["intro"]},
+            {"role": "user", 
+            "content": s_user_content}            
         ],
         text_format=SupportDegree
     )

@@ -213,16 +213,16 @@ def compare_toks(s_suffix: str = "", d_h_pre: Optional[Dict[str, str]] = None, o
     for t in g_l_token_types_to_eval:
         l_sup = list(df[(df["type"] == "e") & (df["mode"] == "supports")][t])
         l_cont = list(df[(df["type"] == "e") & (df["mode"] == "contradicts")][t])
-        comp = compare_lists_with_plots(l_sup, l_cont, "Supports", "Contradicts", s_suffix + "-h-" + t, output_folder)
+        comp = compare_lists_with_plots(l_sup, l_cont, "Supports", "Contradicts", s_suffix + "-Evidence-gen-costs-" + t, output_folder)
         comp_df = pd.DataFrame([comp])  # Single row with all the comparison results
-        comp_df.to_csv(f"{output_folder}/comparison_results{s_suffix}-e-{t}.csv", index=False)        
+        comp_df.to_csv(f"{output_folder}/comparison_results{s_suffix}-Evidence-gen-costs-{t}.csv", index=False)        
 
     for t in g_l_token_types_to_eval:
         l_sup = list(df[(df["type"] == "r") & (df["mode"].isin(["1", "3"]))][t])
         l_cont = list(df[(df["type"] == "r") & (df["mode"].isin(["-1", "-3"]))][t])
-        comp = compare_lists_with_plots(l_sup, l_cont, "Supports", "Opposes", s_suffix + "-r-" + t, output_folder)
+        comp = compare_lists_with_plots(l_sup, l_cont, "Supports", "Opposes", s_suffix + "-Support-degree-costs-" + t, output_folder)
         comp_df = pd.DataFrame([comp])  # Single row with all the comparison results
-        comp_df.to_csv(f"{output_folder}/comparison_results{s_suffix}-r-{t}.csv", index=False)
+        comp_df.to_csv(f"{output_folder}/comparison_results{s_suffix}-Support-degree-costs-{t}.csv", index=False)
 
     if (len(d_h_pre) > 0):
         l_true_events = [key for key, value in d_h_pre.items() if str(value) == "True"]
@@ -232,31 +232,31 @@ def compare_toks(s_suffix: str = "", d_h_pre: Optional[Dict[str, str]] = None, o
         for t in g_l_token_types_to_eval:
             l_sup = list(df_true[(df_true["type"] == "e") & (df_true["mode"] == "supports")][t])
             l_cont = list(df_true[(df_true["type"] == "e") & (df_true["mode"] == "contradicts")][t])
-            comp = compare_lists_with_plots(l_sup, l_cont, "Supports", "Contradicts", s_suffix + "-h-true-events-" + t, output_folder)
+            comp = compare_lists_with_plots(l_sup, l_cont, "Supports", "Contradicts", s_suffix + "-Evidence-gen-costs-for-true-events-" + t, output_folder)
             comp_df = pd.DataFrame([comp])  # Single row with all the comparison results
-            comp_df.to_csv(f"{output_folder}/comparison_results{s_suffix}-e-true-events-{t}.csv", index=False)
+            comp_df.to_csv(f"{output_folder}/comparison_results{s_suffix}-Evidence-gen-costs-for-true-events-{t}.csv", index=False)
 
         for t in g_l_token_types_to_eval:
             l_sup = list(df_true[(df_true["type"] == "r") & (df_true["mode"].isin(["1", "3"]))][t])
             l_cont = list(df_true[(df_true["type"] == "r") & (df_true["mode"].isin(["-1", "-3"]))][t])
-            comp = compare_lists_with_plots(l_sup, l_cont, "Supports", "Opposes", s_suffix + "-r-true-events-" + t, output_folder)
+            comp = compare_lists_with_plots(l_sup, l_cont, "Supports", "Opposes", s_suffix + "-Support-degree-costs-for-true-events-" + t, output_folder)
             comp_df = pd.DataFrame([comp])  # Single row with all the comparison results
-            comp_df.to_csv(f"{output_folder}/comparison_results{s_suffix}-r-true-events-{t}.csv", index=False)            
+            comp_df.to_csv(f"{output_folder}/comparison_results{s_suffix}-Support-degree-costs-for-true-events-{t}.csv", index=False)            
 
         df_false = df[df["event"].str.split(magic_split).str[0].isin(l_false_events)]
         for t in g_l_token_types_to_eval:
             l_sup = list(df_false[(df_false["type"] == "e") & (df_false["mode"] == "supports")][t])
             l_cont = list(df_false[(df_false["type"] == "e") & (df_false["mode"] == "contradicts")][t])
-            comp = compare_lists_with_plots(l_sup, l_cont, "Supports", "Contradicts", s_suffix + "-h-false-events-" + t, output_folder)
+            comp = compare_lists_with_plots(l_sup, l_cont, "Supports", "Contradicts", s_suffix + "-Evidence-gen-costs-for-false-events-" + t, output_folder)
             comp_df = pd.DataFrame([comp])  # Single row with all the comparison results
-            comp_df.to_csv(f"{output_folder}/comparison_results{s_suffix}-e-false-events-{t}.csv", index=False)
+            comp_df.to_csv(f"{output_folder}/comparison_results{s_suffix}-Evidence-gen-costs-for-false-events-{t}.csv", index=False)
 
         for t in g_l_token_types_to_eval:
             l_sup = list(df_false[(df_false["type"] == "r") & (df_false["mode"].isin(["1", "3"]))][t])
             l_cont = list(df_false[(df_false["type"] == "r") & (df_false["mode"].isin(["-1", "-3"]))][t])
-            comp = compare_lists_with_plots(l_sup, l_cont, "Supports", "Opposes", s_suffix + "-r-false-events-" + t, output_folder)
+            comp = compare_lists_with_plots(l_sup, l_cont, "Supports", "Opposes", s_suffix + "-Support-degree-costs-for-false-events-" + t, output_folder)
             comp_df = pd.DataFrame([comp])  # Single row with all the comparison results
-            comp_df.to_csv(f"{output_folder}/comparison_results{s_suffix}-r-false-events-{t}.csv", index=False)                          
+            comp_df.to_csv(f"{output_folder}/comparison_results{s_suffix}-Support-degree-costs-for-false-events-{t}.csv", index=False)                          
 
 # A fully AI-written method. You can see its thinking style.
 # All correct, easy to maintain... but no human would've written it like this :)
@@ -286,8 +286,8 @@ def estimate_get_matrix_cost(d_config: Dict[str, Any]) -> float:
     base_reasoning_tokens = 2000
     
     # Estimate tokens per character (rough approximation: 4 chars per token)
-    tokens_per_hypothesis = nMaxHLen
-    tokens_per_evidence = nMaxELen
+    tokens_per_hypothesis = 1.5*nMaxHLen
+    tokens_per_evidence = 2*nMaxELen
     
     # Get cost per million tokens for the model
     cost_per_M = d_API_cost_per_M[model_in]  # Lets explode if the model is unknown

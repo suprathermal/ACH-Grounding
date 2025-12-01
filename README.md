@@ -8,7 +8,7 @@ LLMs hallucinate. Various strategies exist to cope with that. This project imple
 
 The approach relies upon two pillars:
 
-**First**, LLM statements are organized as a matrix of evidence vs. hypotheses, where each cell indicates the degree of hypothesis support by each piece of evidence.
+1. LLM statements are organized as a matrix of evidence vs. hypotheses, where each cell indicates the degree of hypothesis support by each piece of evidence.
 
 | | Hypothesis1 | Hypothesis2 | ... | HypothesisN |
 |---|---|---|---|---|
@@ -19,30 +19,46 @@ The approach relies upon two pillars:
 
 This inherits from the Analysis of Competitive Hypotheses (ACH, https://en.wikipedia.org/wiki/Analysis_of_competing_hypotheses) approach. 
 
-The benefits of this arrangement include:
+The benefits of this arrangement are:
 - Stability against some fraction of rogue/wrong observations
 - Stability against confirmation bias
-- Cross-referencing of *each* piece of knowledge against *each* hypothesis, effectively "interrogating" all situational knowledge out of the LLM.
+- Guarantee of cross-referencing *each* piece of knowledge against *each* hypothesis, effectively "interrogating" all situational knowledge out of the LLM.
 - Easy adoption of external evidence or hypotheses as further grounding constraints.
 
+2. LLMs only fill out the matrix, but the analysis of it is done via "classic" algorithms.
 
-**Second**, LLMs only fill out the matrix, but the analysis of it is done via "classic" algorithms.
-
-It is known (e.g. https://arxiv.org/abs/2401.11817, https://arxiv.org/pdf/2508.01781) that LLMs hallucinations on certain combinatorially complex yet practically important problems are inevitable and could not be arbitrarily reduced. Analysis of the ACH matrix above may require high combinatorial complexity. Thus, for reliable and repeatable answers that last leg of the analysis is done by the "classic" code.
+It is proven (e.g. https://arxiv.org/abs/2401.11817, https://arxiv.org/pdf/2508.01781) that LLMs hallucinations on many practically important but combinatorially complex problems are inevitable and could not be arbitrarily reduced. Depending on the degree of assurance needed, analysis of the ACH matrix above may require high combinatorial complexity. Thus, for reliable and repeatable answers that last leg of analysis is done by the "classic" code.
 
 ## Output
 
-The primary output of the evaluation system is likelihood scores of being true for each hypothesis. It is printed to the screen and saved as a .csv file to time-stamped folder in the in "Out/YYYY-MM-DD_HH-MM-SS/" folder.
+The primary output of the evaluation system is likelihood scores of being true for each hypothesis. It is printed to the screen and saved as a .csv file to time-stamped folder in the Out\ folder.
 
-Additionally, some intermediate outputs, including the statistical analysis of tokens costs, are saved to that folder, too.
+Additionally, multiple intermediate outputs, including the statistical analysis of tokens costs, are saved to that folder.
+
+## What this is and what this is not
+
+This is:
+- A working tool suitable for personal or small team use.
+- An implementation of basic ACH.
+- A showcase of LLMs querying.
+- A practical demo of AI grounding approach that I believe is novel.
+- Its best use case is "few hypotheses, few precious pieces of evidence, everything highly uncertain -- how can we squeeze the most out of this situation?"
+
+This is NOT:
+- A solution to world problems.
+- An Enterprise grade tool adhering to multitude of compliance standards.
+- A tool for massive data processing. The algorithm cost is O(|Evidence|*|Hypotheses|), which will cost a fortune on inputs of millions data points.
+- Anything that balances multiple requirements. The only one it aims for is correctness, at the cost of everything else.
+- An example of very clean prompting. Some improvements around the wording are clearly possible.
+- A RAG code ready for adoption. Yes, the tool does repeated LLM calls augmented with previously accumulated knowledge, which *technically* qualifies as RAG -- but only as the most rudimentary form of it.
 
 ## Process
 
-The system operates through the following steps (all inputs and options are controlled via a single config file):
-- Take pre-existing set of hypotheses and evidence from a user.
-- Estimate approximate dollar cost of API call before execution, and ask for approval if the estimate exceeds $1.00
+The system works as follows (all inputs and options are controlled via a single config file):
+- Take pre-existing set of hypotheses and evidence from a user
+- Estimate dollar cost of API call before execution, ask to approve if the estimate is greater than $1
 - (Optionally) generate new hypotheses about a given question/event
-- (Optionally) collect and generate supporting and contradicting evidence
+- Collect and generate supporting and contradicting evidence
 - Cross-validate each hypothesis against each evidence to build a support matrix
 - Perform statistical analysis of the results
 
@@ -122,7 +138,7 @@ extra_return_format = "Return ONLY profession name or very brief description of 
 - `Question`: The main question to obtain the answer for
 - `nH`: Number of new hypotheses to generate
 - `ExtraH`: Dictionary of pre-existing hypotheses (keys are hypothesis text, optional values are booleans if the truthfulness of a hypothesis is known)
-- `nE`: Number of evidence items per hypothesis (for both supports and contradicts) to seek/generated
+- `nE`: Number of evidence items per hypothesis (for both supports and contradicts) to seek/generate
 - `ExtraE`: List of pre-existing evidence items
 - `Moniker`: Identifier for the run (used in output filenames)
 - `nMaxHLen`: Maximum length for hypotheses (in characters)
@@ -144,6 +160,12 @@ The script will:
 3. Generate hypotheses and evidence
 4. Build the support matrix
 5. Save results to timestamped output folder in `Out/`
+
+## Output
+
+Results are saved in `Out/YYYY-MM-DD_HH-MM-SS/`:
+- `{Moniker}-{model}.csv`: The support matrix (hypotheses × evidence)
+- `{Moniker}-{model}-eval.csv`: Statistical evaluation results
 
 ## Project Structure
 
@@ -176,4 +198,4 @@ Copyright (c) 2025 by Eugene V. Bobukh
 
 ## Contribution
 
-Feel free to fork and use. But please mention Eugene V. Bobukh as the original code author if you are forking or using this code.
+Feel free to fork and use. But you must mention Eugene V. Bobukh as the original author if you are forking or using this code.
