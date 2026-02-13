@@ -54,12 +54,82 @@ def parse_config(config_path: str) -> Dict[str, Any]:
                 # Use regex to find colons followed by whitespace and then comma or closing brace
                 # Pattern matches: ":" followed by optional whitespace, then comma or closing brace
                 value_str = re.sub(r':\s*(?=,|})', ': None', value_str)
+
+            # Check if value looks like a list (starts with '[' and ends with ']')
+            looks_like_list = value_str.strip().startswith('[') and value_str.strip().endswith(']')
             
             # Try to parse the value
             try:
-                # First, try to evaluate as Python literal (for lists, dicts, bools, numbers)
-                value = ast.literal_eval(value_str)
-            except (ValueError, SyntaxError):
+                # First, try to convert to a list if it looks like one
+                # The strings may be quoted or not. AI wrote the code to handle this, I would not be able to pick all the details :)
+                if looks_like_list:
+                    # Remove outer brackets and whitespace
+                    list_content = value_str.strip('[] ').strip()
+                    # Parse the list content: handle both quoted and unquoted strings
+                    value = []
+                    if list_content:  # Only parse if there's content
+                        # Split on commas while respecting quoted strings
+                        # Use a simple state machine approach
+                        items = []
+                        current_item = []
+                        in_quotes = False
+                        quote_char = None
+                        i = 0
+                        while i < len(list_content):
+                            char = list_content[i]
+                            if not in_quotes:
+                                if char in ['"', "'"]:
+                                    in_quotes = True
+                                    quote_char = char
+                                    current_item.append(char)
+                                elif char == ',':
+                                    # End of current item
+                                    item_str = ''.join(current_item).strip()
+                                    if item_str:
+                                        items.append(item_str)
+                                    current_item = []
+                                else:
+                                    current_item.append(char)
+                            else:
+                                # Inside quotes
+                                current_item.append(char)
+                                if char == quote_char:
+                                    # Check if it's escaped
+                                    if i > 0 and list_content[i-1] == '\\':
+                                        # Escaped quote, continue
+                                        pass
+                                    else:
+                                        # End of quoted string
+                                        in_quotes = False
+                                        quote_char = None
+                            i += 1
+                        # Add the last item
+                        item_str = ''.join(current_item).strip()
+                        if item_str:
+                            items.append(item_str)
+                        
+                        # Process each item: remove quotes if present
+                        for item in items:
+                            item = item.strip()
+                            # If it's a quoted string, remove quotes and handle escapes
+                            if (item.startswith('"') and item.endswith('"')) or \
+                               (item.startswith("'") and item.endswith("'")):
+                                # Remove outer quotes
+                                quote_char = item[0]
+                                inner = item[1:-1]
+                                # Handle escaped quotes and backslashes
+                                inner = inner.replace(f'\\{quote_char}', quote_char)
+                                inner = inner.replace('\\\\', '\\')
+                                value.append(inner)
+                            else:
+                                # Unquoted string, just strip whitespace
+                                value.append(item)
+                else:
+                    value = ast.literal_eval(value_str)
+            except (ValueError, SyntaxError) as e:
+                # If that fails and it looks like a list, raise an error since we can't parse it
+                if looks_like_list:
+                    raise ValueError(f"Failed to parse list value at line {line_num}: {value_str}. Error: {e}")
                 # If that fails, treat as a string (remove quotes if present)
                 # Remove surrounding quotes if they exist
                 if (value_str.startswith('"') and value_str.endswith('"')) or \
