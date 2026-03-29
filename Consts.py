@@ -12,7 +12,8 @@ d_API_cost_per_M = {"gpt-5-mini": 0.250,
                     "gpt-5-nano": 0.050,
                     "gpt-5":1.250,
                     "gpt-5-1":1.250,
-                    "gpt-5-pro":15.00
+                    "gpt-5-pro":15.00,
+                    "gpt-4o":0.0015,
                     }
 
 
